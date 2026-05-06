@@ -162,10 +162,41 @@ sudo ./run.sh install
 sudo ./run.sh start
 
 
+==============
+
+region : ap-south-1
+repo : gha-ecrdeploy
+role : arn:aws:iam::655700896650:role/GHA-Role
+
+
+aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 655700896650.dkr.ecr.ap-south-1.amazonaws.com
+
+docker build -t gha-ecrdeploy .
+
+docker tag gha-ecrdeploy:latest 655700896650.dkr.ecr.ap-south-1.amazonaws.com/gha-ecrdeploy:latest
+
+docker push 655700896650.dkr.ecr.ap-south-1.amazonaws.com/gha-ecrdeploy:latest
+
+
+echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
+
+
+======
+
+region : ap-south-1
+repo : gha-ecrdeploy
+role : arn:aws:iam::655700896650:role/GHA-Role
+task def : my-gha-python
+ecs cluster : myecsdemo
+container name: mypythonapp
+ecs service name: my-gha-python-service-ly7a0301
 
 
 
 
+aws ecs describe-task-definition \
+  --task-definition my-gha-python \
+  --query 'taskDefinition.containerDefinitions[].name'
 
 
 
